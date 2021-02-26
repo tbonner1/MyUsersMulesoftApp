@@ -1,0 +1,37 @@
+#%RAML 1.0
+title: My Users API
+
+uses:
+  traitsLibrary: /resources/TraitsLibrary.raml
+  user: /resources/User.raml
+
+/users:
+  get:
+    queryParameters:
+      type:
+        required: false
+        enum:
+          - USER
+          - ADMIN
+    is: [traitsLibrary.usersResponseMessage]
+
+  post:
+    body:
+      application/json:
+        type: user.usertype
+        examples: !include /resources/UserNoIdExample.raml
+    is: [traitsLibrary.postResponseMessage]
+
+  /{id}:
+    get:
+      is: [traitsLibrary.getByIdResponseMessage]
+    
+    delete:
+      is: [traitsLibrary.deleteByIdResponseMessage]
+    
+    put:
+      body:
+        application/json:
+          type: user.usertype
+          examples: !include /resources/UserNoIdExample.raml
+      is: [traitsLibrary.putByIdResponseMessage]

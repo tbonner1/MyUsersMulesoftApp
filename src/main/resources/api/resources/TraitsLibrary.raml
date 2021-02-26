@@ -1,0 +1,46 @@
+#%RAML 1.0 Library
+uses:
+  user: User.raml
+
+traits:
+  usersResponseMessage:
+      responses: 
+        200:
+          body: 
+            application/json:
+              type: user.usertype[]
+              examples: 
+                output: !include UsersExample.raml
+  
+  postResponseMessage:
+    responses:
+      201:
+        body:
+          application/json:
+            example:
+              message: User added (not)
+
+  getByIdResponseMessage:
+    responses:
+        200:
+          body:
+            application/json:
+              type: user.usertype
+              examples:
+                output: !include UserExample.raml
+
+  deleteByIdResponseMessage:
+    responses:
+        200:
+          body:
+            application/json:
+              example:
+                message: User deleted (not)
+
+  putByIdResponseMessage:
+    responses:
+        200:
+          body:
+            application/json:
+              example:
+                message: User updated (not)

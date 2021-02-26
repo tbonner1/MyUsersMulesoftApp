@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="users_json" format="json">
+      <types:shape format="weave" example="examples/users-example.json"><![CDATA[%dw 2.0
+
+type users_json = Array<{|  id: Number {"typeId": "int"},   username: String,   password: String,   email: String,   "type": String|}> {"example": "[{\\\"id\\\":1,\\\"username\\\":\\\"Admin\\\",\\\"password\\\":\\\"password\\\",\\\"email\\\":\\\"admin@mail.com\\\",\\\"type\\\":\\\"ADMIN\\\"},{\\\"id\\\":2,\\\"username\\\":\\\"Joe\\\",\\\"password\\\":\\\"password\\\",\\\"email\\\":\\\"joe@mail.com\\\",\\\"type\\\":\\\"USER\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#f7006aa6-378d-41b2-9ac1-0938d27f3ef2">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="users_json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
