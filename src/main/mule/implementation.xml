@@ -6,15 +6,7 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="03c3de41-2a57-4e9a-a11c-b3107940ea04" >
-		<http:listener-connection host="0.0.0.0" port="8081" />
-	</http:listener-config>
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="d19a1b10-602c-4cb8-ac38-9a0aa771a7cf" >
-		<db:my-sql-connection host="localhost" port="3306" user="root" password="root" database="anypoint" >
-			<db:connection-properties >
-			</db:connection-properties>
-		</db:my-sql-connection>
-	</db:config>
+	
 	<flow name="getUsers" doc:id="f7006aa6-378d-41b2-9ac1-0938d27f3ef2" >
 		<db:select doc:name="Select all users" doc:id="fba49918-ff77-4d06-9277-59735bfdda93" config-ref="Database_Config">
 			<db:sql ><![CDATA[SELECT * FROM users]]></db:sql>
@@ -56,12 +48,49 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 		</ee:transform>
 	</flow>
 	<flow name="postUser" doc:id="76b7e69a-9bac-4f50-bfe3-22787ca3d904" >
-		<set-payload value='{"message": "User added (not)"}' doc:name="Set Payload" doc:id="3ad227ed-a155-4c2f-9b14-27f30e38224e" />
+		<db:insert doc:name="Insert new User" doc:id="ad7030c8-ec80-4025-bb0c-823cf13d04b1" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO users(username, password, email, type) VALUES(:username, :password, :email, :type)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	'username':payload.username,
+	'password':payload.password,
+	'email':payload.email,
+	'type':payload."type"
+}]]]></db:input-parameters>
+		</db:insert>
+		<set-payload value='{"message": "User added"}' doc:name="Set Payload" doc:id="3ad227ed-a155-4c2f-9b14-27f30e38224e" />
 	</flow>
 	<flow name="deleteUser" doc:id="ae2d1d2a-69bb-40d1-aeca-56b49877cd71" >
-		<set-payload value='{"message": "User deleted (not)"}' doc:name="Set Payload" doc:id="5cafb23c-435c-4563-866b-d96a2ae73d60" />
+		<db:delete doc:name="Delete" doc:id="7da89f53-a0ca-41f0-9bdf-116e5abf4732" config-ref="Database_Config">
+			<db:sql ><![CDATA[DELETE FROM users
+WHERE id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'id' : attributes.uriParams.id}]]]></db:input-parameters>
+		</db:delete>
+		<set-payload value='{"message": "User deleted"}' doc:name="Set Payload" doc:id="5cafb23c-435c-4563-866b-d96a2ae73d60" />
 	</flow>
-	<flow name="putUser" doc:id="48235d72-d219-4448-860b-db5ee5de62ea" >
-		<set-payload value='{"message": "User edited (not)"}' doc:name="Set Payload" doc:id="2fd9bd88-68fd-457f-b4e9-5f69fe615910" />
+	<flow name="patchUser" doc:id="48235d72-d219-4448-860b-db5ee5de62ea" >
+		<ee:transform doc:name="Transform Message" doc:id="7abbdc01-107f-47c5-bf3e-05fb5cdb146f">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+vars: payload pluck ($$ ++ " = " ++ $) joinBy (", ")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[payload.vars]" doc:name="Set Payload" doc:id="ada6669d-ec54-4fa5-82b1-b2903e463b27" />
+		<db:update doc:name="Patch" doc:id="39c2d10d-e929-4b2a-ac8a-ffbb2ef60079" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE users 
+SET 
+username = 'Joe',
+password = 'password',
+email = 'joe@mail.com',
+type = 'USER'
+WHERE id = :id]]></db:sql>
+			<db:input-parameters ><![CDATA[#[output application/java
+---
+{
+	'id': attributes.uriParams.id
+}]]]></db:input-parameters>
+		</db:update>
+		<set-payload value='{"message": "User patched"}' doc:name="Set Payload" doc:id="2fd9bd88-68fd-457f-b4e9-5f69fe615910" />
 	</flow>
 </mule>

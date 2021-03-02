@@ -1,0 +1,7 @@
+{vals
+	"id": 1, 
+	"username": "Admin",
+	"password": "password",
+	"email": "admin@mail.com",
+	"type": "ADMIN"
+}

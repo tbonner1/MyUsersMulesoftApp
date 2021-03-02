@@ -29,9 +29,9 @@ uses:
     delete:
       is: [traitsLibrary.deleteByIdResponseMessage]
     
-    put:
+    patch:
       body:
         application/json:
           type: user.usertype
           examples: !include /resources/UserNoIdExample.raml
-      is: [traitsLibrary.putByIdResponseMessage]
+      is: [traitsLibrary.patchByIdResponseMessage]

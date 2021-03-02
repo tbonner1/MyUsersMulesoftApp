@@ -8,6 +8,25 @@ type users_json = Array<{|  id: Number {"typeId": "int"},   username: String,   
 
 ]]></types:shape>
     </types:type>
+    <types:type name="user" format="json">
+      <types:shape format="weave" example="examples/user-example.json"><![CDATA[%dw 2.0
+
+type user = {|
+  username: String, 
+  password: String, 
+  email: String, 
+  "type": String
+|} {"example": "{\\\"username\\\":\\\"Joe\\\",\\\"password\\\":\\\"password\\\",\\\"email\\\":\\\"joe@mail.com\\\",\\\"type\\\":\\\"USER\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="vals-example" format="json">
+      <types:shape format="weave" example="examples/vals-example.json"><![CDATA[%dw 2.0
+
+type vals_example = {| vals: String |} {"example": "{\\\"vals\\\":\\\"username = 'Joe', password = 'password', email = 'joe@mail.com', type = 'USER'\\\"}"}
+
+]]></types:shape>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#f7006aa6-378d-41b2-9ac1-0938d27f3ef2">
     <types:processor-declaration>
@@ -16,6 +35,33 @@ type users_json = Array<{|  id: Number {"typeId": "int"},   username: String,   
           <types:payload type="users_json"/>
         </types:message>
       </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ad7030c8-ec80-4025-bb0c-823cf13d04b1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="users_json"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7abbdc01-107f-47c5-bf3e-05fb5cdb146f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="user"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#39c2d10d-e929-4b2a-ac8a-ffbb2ef60079">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="vals-example"/>
+        </types:message>
+      </types:input-event>
     </types:processor-declaration>
   </types:enrichment>
 </types:mule>

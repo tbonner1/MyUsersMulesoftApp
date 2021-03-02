@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
-    <apikit:config name="my-users-api-config" api="resource::4143dffe-6413-4300-a9d8-d80ae4b0516e:my-users-api:1.0.0:raml:zip:my-users-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    
     <flow name="my-users-api-main">
         <http:listener config-ref="HTTP_Listener_config" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -120,19 +120,19 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="put:\users\(id):application\json:my-users-api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="1b99e7c0-c002-4e37-86ec-44baad35d6bf" name="putUser"/>
+    <flow name="patch:\users\(id):application\json:my-users-api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="1b99e7c0-c002-4e37-86ec-44baad35d6bf" name="patchUser"/>
     </flow>
     <flow name="delete:\users\(id):my-users-api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="7eaee552-ca86-41db-a074-754a3df6e857" name="deleteUser"/>
+        <flow-ref doc:name="Flow Reference" doc:id="7eaee552-ca86-41db-a074-754a3df6e857" name="deleteUser" />
     </flow>
     <flow name="get:\users:my-users-api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="b6d99add-7faa-4cbf-8ec1-0acf7306b481" name="getUsers"/>
+        <flow-ref doc:name="Flow Reference" doc:id="b6d99add-7faa-4cbf-8ec1-0acf7306b481" name="getUsers" />
     </flow>
     <flow name="get:\users\(id):my-users-api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="7db9fae5-0287-4f6c-9ae9-f2c7d7b44d28" name="getUsersById"/>
+        <flow-ref doc:name="Flow Reference" doc:id="7db9fae5-0287-4f6c-9ae9-f2c7d7b44d28" name="getUsersById" />
     </flow>
     <flow name="post:\users:application\json:my-users-api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="c2ea90ac-092e-4f0e-bd0c-153742c59554" name="postUser"/>
+        <flow-ref doc:name="Flow Reference" doc:id="c2ea90ac-092e-4f0e-bd0c-153742c59554" name="postUser" />
     </flow>
 </mule>
