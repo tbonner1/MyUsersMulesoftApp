@@ -2,8 +2,8 @@
 title: My Users API
 
 uses:
-  traitsLibrary: /resources/TraitsLibrary.raml
-  user: /resources/User.raml
+  traitsLibrary: TraitsLibrary.raml
+  user: User.raml
 
 /users:
   get:
@@ -19,7 +19,7 @@ uses:
     body:
       application/json:
         type: user.usertype
-        examples: !include /resources/UserNoIdExample.raml
+        examples: !include UserNoIdExample.raml
     is: [traitsLibrary.postResponseMessage]
 
   /{id}:
@@ -33,5 +33,5 @@ uses:
       body:
         application/json:
           type: user.usertype
-          examples: !include /resources/UserNoIdExample.raml
+          examples: !include UserNoIdExample.raml
       is: [traitsLibrary.patchByIdResponseMessage]

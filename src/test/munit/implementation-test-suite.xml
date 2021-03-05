@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-patchUserTest" doc:id="70000b83-acd3-41bd-8ccf-4329f3e8907b" description="Test">
+		<munit:behavior >
+			<set-payload value='#[{"username": "Joe",&#10;  "password": "password",&#10;  "email": "joe@mail.com",&#10;  "type": "USER"}]' doc:name="Set Payload" doc:id="7439606a-49ea-406a-b216-443863fcc7c4" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to patchUser" doc:id="a0f4cbfb-bb11-4fd6-a755-b3004b27b84d" name="patchUser"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="2ad5819a-ea59-4594-9df8-941dc81610eb" actual="#[payload]" expected='{"message": "User patched"}' message="FAILED"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-patchInfoTest" doc:id="31d3ab92-6a29-44c7-8acc-75406da528a4" description="Test">
+		<munit:execution >
+			<set-payload value='#[{"username": "Joe",&#10;  "password": "password",&#10;  "email": "joe@mail.com",&#10;  "type": "USER"}]' doc:name="Set Payload" doc:id="dd87ad78-a441-438b-8801-f563a1a02759" />
+			<flow-ref doc:name="Flow-ref to patchInfo" doc:id="b215d6a0-3819-4d8f-8a6d-f3cc3aa94eed" name="patchInfo"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="db0933b2-7ff4-4118-b28e-31c5264f9d2f" actual="#[payload]" expected="#[&quot;username = 'Joe', password = 'password', email = 'joe@mail.com', type = 'USER'&quot;]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
