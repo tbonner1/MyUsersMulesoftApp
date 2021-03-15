@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
 	<flow name="getUsers" doc:id="f7006aa6-378d-41b2-9ac1-0938d27f3ef2" >
 		<db:select doc:name="Select all users" doc:id="fba49918-ff77-4d06-9277-59735bfdda93" config-ref="Database_Config">
 			<db:sql ><![CDATA[SELECT * FROM users]]></db:sql>
@@ -67,30 +67,68 @@ WHERE id = :id]]></db:sql>
 		</db:delete>
 		<set-payload value='{"message": "User deleted"}' doc:name="Set Payload" doc:id="5cafb23c-435c-4563-866b-d96a2ae73d60" />
 	</flow>
-	<flow name="patchUser" doc:id="48235d72-d219-4448-860b-db5ee5de62ea" >
-		<flow-ref doc:name="Flow Reference" doc:id="21bb145a-83ad-43e6-87d4-2fb65c366b3f" name="patchInfo"/>
-		<db:update doc:name="Patch" doc:id="39c2d10d-e929-4b2a-ac8a-ffbb2ef60079" config-ref="Database_Config">
-			<db:sql ><![CDATA[UPDATE users 
+	<flow name="patchUser" doc:id="e0cbc631-f20c-42f0-ab50-926866059dae" >
+		<set-variable value="#[message.payload]" doc:name="change" doc:id="e6c50466-c4f9-45ca-aed0-3fdedad715bd" variableName="change"/>
+		<set-variable value="#[attributes.uriParams.id]" doc:name="id" doc:id="a31cf4dd-d3a1-40b9-877f-f80de9ec60e5" variableName="id"/>
+		<choice doc:name="Choice" doc:id="9f7d2468-fa4b-40de-b176-780faeba6d93" >
+			<when expression="#[vars.change != {}]">
+				<flow-ref doc:name="getUsersById" doc:id="ded891ef-b040-4671-bc13-1a103c30764b" name="getUsersById" />
+				<validation:is-not-empty-collection doc:name="getUsersById works" doc:id="2591cb76-c9fc-4b31-967b-998a1da5adf6" message="USER NOT FOUND! UNABLE TO PATCH!!!!!" />
+				<choice doc:name="Choice" doc:id="f1e1cc90-7e89-4266-83ba-c1c5aa4577d7">
+					<when expression="#[vars.change.username != null]">
+						<set-variable value="#[vars.change.username as String]" doc:name="username" doc:id="fb32fc61-28ff-47b7-8e0b-536138fa99a1" variableName="username" />
+					</when>
+					<otherwise>
+						<set-variable value="#[payload.username[0] as String]" doc:name="username" doc:id="46d571e6-c5e1-41df-9b7c-3e9bcb8e2208" variableName="username" />
+					</otherwise>
+				</choice>
+				<choice doc:name="Choice" doc:id="dd05b9b2-ba0b-4f16-9e57-d46b32dda62e">
+					<when expression="#[vars.change.password != null]">
+						<set-variable value="#[vars.change.password as String]" doc:name="password" doc:id="8f079e18-6d3f-4aa6-8183-eb2541ae6a1a" variableName="password" />
+					</when>
+					<otherwise >
+						<set-variable value="#[payload.password[0] as String]" doc:name="password" doc:id="eeb62aed-cc1c-4026-9ec6-e9021104ba18" variableName="password" />
+					</otherwise>
+				</choice>
+				<choice doc:name="Choice" doc:id="11671e7b-a947-4675-93ce-8c2fa72941a8">
+					<when expression="#[vars.change.email != null]">
+						<set-variable value="#[vars.change.email as String]" doc:name="email" doc:id="59d9483d-eee8-4d5c-8d6f-497e05f1d28a" variableName="email" />
+					</when>
+					<otherwise >
+						<set-variable value="#[payload.email[0] as String]" doc:name="email" doc:id="2e5c0e84-cc7d-4299-9373-57c37404d48e" variableName="email" />
+					</otherwise>
+				</choice>
+				<choice doc:name="Choice" doc:id="b4b5c2da-a07d-4737-8de6-d91ba395702a">
+					<when expression='#[vars.change."type" != null]'>
+						<set-variable value='#[vars.change."type" as String]' doc:name="type" doc:id="f4cbebcb-2c58-4d74-9231-14825464688a" variableName="type" />
+					</when>
+					<otherwise>
+						<set-variable value='#[payload."type"[0] as String]' doc:name="type" doc:id="307ced46-a437-464d-929d-bc07be54c7fc" variableName="type" />
+					</otherwise>
+				</choice>
+				<db:update doc:name="Update" doc:id="20526349-7d1d-4161-8421-d8e3e3436421" config-ref="Database_Config">
+			<db:sql><![CDATA[UPDATE users 
 SET 
-username = 'Joe', password = 'password', email = 'joe@mail.com', type = 'USER'
+username = :username,
+password = :password,
+email = :email,
+type = :type
 WHERE id = :id]]></db:sql>
-			<db:input-parameters ><![CDATA[#[output application/java
+			<db:input-parameters><![CDATA[#[output application/java
 ---
 {
-	'id': attributes.uriParams.id
+	'id': vars.id,
+	'username': vars.username as String,
+	'password': vars.password as String,
+	'email': vars.email as String,
+	'type': vars."type" as String
 }]]]></db:input-parameters>
 		</db:update>
-		<set-payload value='{"message": "User patched"}' doc:name="Set Payload" doc:id="d5817231-2b13-48e6-a355-6ae6332dc4bb" />
-	</flow>
-	<flow name="patchInfo" doc:id="cebcbace-0f60-4353-9797-6b8f11ddc085" >
-		<ee:transform doc:name="Transform Message" doc:id="7abbdc01-107f-47c5-bf3e-05fb5cdb146f">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/java
----
-vars: payload pluck ($$ ++ " = " ++ "'" ++ $ ++ "'") joinBy (", ")]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<set-payload value="#[payload.vars]" doc:name="Set Payload" doc:id="ada6669d-ec54-4fa5-82b1-b2903e463b27" />
+				<set-payload value="#[&quot;New user &quot; ++ vars.username ++ &quot;'s password is &quot; ++ vars.password ++ &quot; and email is &quot; ++ vars.email ++ &quot; and they are a &quot; ++ vars.&quot;type&quot;]" doc:name="Set Payload" doc:id="58fabf23-fe2d-4f20-a65c-32eec02401ac" />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="NO VARIABLES PASSED" doc:id="59499513-3f26-487a-ba7d-439ff2ca8fa5" message="NO VARIABLES PASSED"/>
+			</otherwise>
+		</choice>
 	</flow>
 </mule>

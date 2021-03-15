@@ -16,11 +16,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="36f3d23a-1c2a-4a77-a065-255bf72cc158" >
 		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.user}" password="${mysql.password}" database="${mysql.database}" >
 			<db:connection-properties >
+				<db:connection-property key="useSSL" value="false" />
+
 			</db:connection-properties>
 		</db:my-sql-connection>
 	</db:config>
 	
-	<apikit:config name="my-users-api-config" api="resource::4143dffe-6413-4300-a9d8-d80ae4b0516e:my-users-api:1.0.2:raml:zip:my-users-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<apikit:config name="my-users-api-config" api="resource::4143dffe-6413-4300-a9d8-d80ae4b0516e:my-users-api:1.0.4:raml:zip:my-users-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 	
 	<http:listener-config name="my-users-api-2-httpListenerConfig">
         <http:listener-connection host="${http2.host}" port="${http2.port}" />
